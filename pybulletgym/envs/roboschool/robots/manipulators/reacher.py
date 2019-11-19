@@ -5,8 +5,10 @@ import numpy as np
 class Reacher(MJCFBasedRobot):
     TARG_LIMIT = 0.27
 
-    def __init__(self):
+    def __init__(self, sparse_reward=False):
+        assert isinstance(sparse_reward, bool), 'needs to be boolean'
         MJCFBasedRobot.__init__(self, 'reacher.xml', 'body0', action_dim=2, obs_dim=9)
+        self.sparse_reward = sparse_reward
 
     def robot_specific_reset(self, bullet_client):
         self.jdict["target_x"].reset_current_position(

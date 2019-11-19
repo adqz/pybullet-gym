@@ -5,8 +5,9 @@ from pybulletgym.envs.roboschool.robots.manipulators.reacher import Reacher
 
 
 class ReacherBulletEnv(BaseBulletEnv):
-    def __init__(self):
-        self.robot = Reacher()
+    def __init__(self, sparse_reward=False):
+        assert isinstance(sparse_reward, bool), 'needs to be boolean'
+        self.robot = Reacher(sparse_reward)
         BaseBulletEnv.__init__(self, self.robot)
 
     def create_single_player_scene(self, bullet_client):
@@ -28,7 +29,11 @@ class ReacherBulletEnv(BaseBulletEnv):
         )
         stuck_joint_cost = -0.1 if np.abs(np.abs(self.robot.gamma) - 1) < 0.01 else 0.0
         self.rewards = [float(self.potential - potential_old), float(electricity_cost), float(stuck_joint_cost)]
+        if self.sparse_reward:
+            self.rewards = self.get_sparse_reward()
         self.HUD(state, a, False)
+        self.make_reward_sparse()
+        
         return state, sum(self.rewards), False, {}
 
     def camera_adjust(self):
@@ -36,3 +41,11 @@ class ReacherBulletEnv(BaseBulletEnv):
         x *= 0.5
         y *= 0.5
         self.camera.move_and_look_at(0.3, 0.3, 0.3, x, y, z)
+
+    def get_sparse_reward(self):
+        ''' Generate sparse reward if the make_sparse flag is True '''
+        if np.linalg.norm(self.robot.to_target_vec) < 0.2:
+            return 0
+        else:
+            return self.rewards
+
