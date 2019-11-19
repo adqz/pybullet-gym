@@ -29,6 +29,7 @@ class ReacherBulletEnv(BaseBulletEnv):
         )
         stuck_joint_cost = -0.1 if np.abs(np.abs(self.robot.gamma) - 1) < 0.01 else 0.0
         self.rewards = [float(self.potential - potential_old), float(electricity_cost), float(stuck_joint_cost)]
+        # added functionality to allow for sparse reward
         if self.sparse_reward:
             self.rewards = self.get_sparse_reward()
         self.HUD(state, a, False)

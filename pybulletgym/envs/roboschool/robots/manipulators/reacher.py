@@ -9,6 +9,8 @@ class Reacher(MJCFBasedRobot):
         assert isinstance(sparse_reward, bool), 'needs to be boolean'
         MJCFBasedRobot.__init__(self, 'reacher.xml', 'body0', action_dim=2, obs_dim=9)
         self.sparse_reward = sparse_reward
+        if self.sparse_reward:
+            print('CAUTIOn: Environment will have sparse reward now')
 
     def robot_specific_reset(self, bullet_client):
         self.jdict["target_x"].reset_current_position(
