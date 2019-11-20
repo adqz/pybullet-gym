@@ -8,6 +8,7 @@ class ReacherBulletEnv(BaseBulletEnv):
     def __init__(self, sparse_reward=False):
         assert isinstance(sparse_reward, bool), 'needs to be boolean'
         self.robot = Reacher(sparse_reward)
+        self.sparse_reward = sparse_reward
         BaseBulletEnv.__init__(self, self.robot)
 
     def create_single_player_scene(self, bullet_client):
@@ -33,7 +34,6 @@ class ReacherBulletEnv(BaseBulletEnv):
         if self.sparse_reward:
             self.rewards = self.get_sparse_reward()
         self.HUD(state, a, False)
-        self.make_reward_sparse()
         
         return state, sum(self.rewards), False, {}
 
