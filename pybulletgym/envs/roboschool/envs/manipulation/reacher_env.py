@@ -29,7 +29,7 @@ class ReacherBulletEnv(BaseBulletEnv):
                 - 0.01 * (np.abs(a[0]) + np.abs(a[1]))  # stall torque require some energy
         )
         stuck_joint_cost = -0.1 if np.abs(np.abs(self.robot.gamma) - 1) < 0.01 else 0.0
-        self.rewards = [float(self.potential - potential_old), float(electricity_cost), float(stuck_joint_cost)]
+        # self.rewards = [float(self.potential - potential_old), float(electricity_cost), float(stuck_joint_cost)]
         # added functionality to allow for sparse reward
         if self.sparse_reward:
             self.rewards = self.get_sparse_reward()
@@ -44,9 +44,12 @@ class ReacherBulletEnv(BaseBulletEnv):
         self.camera.move_and_look_at(0.3, 0.3, 0.3, x, y, z)
 
     def get_sparse_reward(self):
-        ''' Generate sparse reward if the make_sparse flag is True '''
+        ''' 
+        Generate sparse reward if the make_sparse flag is True.
+        Reward is only 0 or 1 now.
+        '''
         if np.linalg.norm(self.robot.to_target_vec) < 0.2:
             return 0
         else:
-            return self.rewards
+            return 1
 
