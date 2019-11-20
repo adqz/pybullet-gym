@@ -4,25 +4,36 @@ import numpy as np
 
 class Reacher(MJCFBasedRobot):
     TARG_LIMIT = 0.27
+    RADIUS_LIMIT = 0.21
 
-    def __init__(self, sparse_reward=False):
+    def __init__(self, rand_init = False, sparse_reward=False):
         assert isinstance(sparse_reward, bool), 'needs to be boolean'
         MJCFBasedRobot.__init__(self, 'reacher.xml', 'body0', action_dim=2, obs_dim=9)
         self.sparse_reward = sparse_reward
+        self.rand_init = rand_init
         if self.sparse_reward:
-            print('CAUTIOn: Environment will have sparse reward now')
+            print('CAUTION: Environment will have sparse reward now')
 
     def robot_specific_reset(self, bullet_client):
-        self.jdict["target_x"].reset_current_position(
-            self.np_random.uniform(low=-self.TARG_LIMIT, high=self.TARG_LIMIT), 0)
-        self.jdict["target_y"].reset_current_position(
-            self.np_random.uniform(low=-self.TARG_LIMIT, high=self.TARG_LIMIT), 0)
+        r = self.np_random.uniform(low=0.05, high=self.RADIUS_LIMIT)
+        theta = self.np_random.uniform(low=0, high=2*np.pi)
+        self.jdict["target_x"].reset_current_position(r * np.cos(theta), 0)
+        self.jdict["target_y"].reset_current_position(r * np.sin(theta), 0)
+
         self.fingertip = self.parts["fingertip"]
         self.target = self.parts["target"]
         self.central_joint = self.jdict["joint0"]
         self.elbow_joint = self.jdict["joint1"]
-        self.central_joint.reset_current_position(self.np_random.uniform(low=-3.14, high=3.14), 0)
-        self.elbow_joint.reset_current_position(self.np_random.uniform(low=-3.14, high=3.14), 0)
+        if self.rand_init:
+            self.central_joint.reset_current_position(self.np_random.uniform(low=-3.14, high=3.14), 0)
+            self.elbow_joint.reset_current_position(self.np_random.uniform(low=-3.14, high=3.14), 0)
+        else:
+            self.central_joint.reset_current_position(np.pi/2, 0)
+            self.elbow_joint.reset_current_position(np.pi/4, 0)
+            r, theta = 0.15, np.pi/4
+            self.jdict["target_x"].reset_current_position(r * np.cos(theta), 0)
+            self.jdict["target_y"].reset_current_position(r * np.sin(theta), 0)
+        
 
     def apply_action(self, a):
         assert (np.isfinite(a).all())

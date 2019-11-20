@@ -5,10 +5,11 @@ from pybulletgym.envs.roboschool.robots.manipulators.reacher import Reacher
 
 
 class ReacherBulletEnv(BaseBulletEnv):
-    def __init__(self, sparse_reward=False):
+    def __init__(self, rand_init = False, sparse_reward=False):
         assert isinstance(sparse_reward, bool), 'needs to be boolean'
-        self.robot = Reacher(sparse_reward)
+        self.robot = Reacher(rand_init, sparse_reward)
         self.sparse_reward = sparse_reward
+        self.rand_init = rand_init
         BaseBulletEnv.__init__(self, self.robot)
 
     def create_single_player_scene(self, bullet_client):
