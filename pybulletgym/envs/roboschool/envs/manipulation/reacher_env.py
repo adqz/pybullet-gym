@@ -49,7 +49,7 @@ class ReacherBulletEnv(BaseBulletEnv):
         Generate sparse reward if the make_sparse flag is True.
         Reward is only 0 or 1 now.
         '''
-        if np.linalg.norm(self.robot.to_target_vec) < 1e-3:
+        if np.linalg.norm(self.robot.to_target_vec) < 1e-2:
             return [1]
         else:
             return [0]
