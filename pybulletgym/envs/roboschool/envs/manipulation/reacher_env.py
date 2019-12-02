@@ -22,15 +22,12 @@ class ReacherBulletEnv(BaseBulletEnv):
 
         state = self.robot.calc_state()  # sets self.to_target_vec
 
-        potential_old = self.potential
-        self.potential = self.robot.calc_potential()
+        self.potential = self.robot.calc_potential() * 0.01
 
         electricity_cost = (
-                -0.10 * (np.abs(a[0] * self.robot.theta_dot) + np.abs(a[1] * self.robot.gamma_dot))  # work torque*angular_velocity
-                - 0.01 * (np.abs(a[0]) + np.abs(a[1]))  # stall torque require some energy
+                - 0.1 * (a[0] ** 2 + a[1] ** 2)  # stall torque require some energy
         )
-        stuck_joint_cost = -0.1 if np.abs(np.abs(self.robot.gamma) - 1) < 0.01 else 0.0
-        self.rewards = [float(self.potential - potential_old), float(electricity_cost), float(stuck_joint_cost)]
+        self.rewards = [float(self.potential), float(electricity_cost)]
         # added functionality to allow for sparse reward
         if self.sparse_reward:
             self.rewards = self.get_sparse_reward()

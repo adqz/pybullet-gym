@@ -8,7 +8,7 @@ class Reacher(MJCFBasedRobot):
 
     def __init__(self, rand_init = False, sparse_reward=False):
         assert isinstance(sparse_reward, bool), 'needs to be boolean'
-        MJCFBasedRobot.__init__(self, 'reacher.xml', 'body0', action_dim=2, obs_dim=9)
+        MJCFBasedRobot.__init__(self, 'reacher.xml', 'body0', action_dim=2, obs_dim=8)
         self.sparse_reward = sparse_reward
         self.rand_init = rand_init
         if self.sparse_reward:
@@ -47,14 +47,13 @@ class Reacher(MJCFBasedRobot):
         target_y, _ = self.jdict["target_y"].current_position()
         self.to_target_vec = np.array(self.fingertip.pose().xyz()) - np.array(self.target.pose().xyz())
         return np.array([
-            target_x,
-            target_y,
-            self.to_target_vec[0],
-            self.to_target_vec[1],
-            np.cos(theta),
-            np.sin(theta),
+            target_x / 0.27,
+            target_y / 0.27,
+            self.to_target_vec[0] / 0.27,
+            self.to_target_vec[1] / 0.27,
+            theta / np.pi,
             self.theta_dot,
-            self.gamma,
+            self.gamma / np.pi,
             self.gamma_dot,
         ])
 
